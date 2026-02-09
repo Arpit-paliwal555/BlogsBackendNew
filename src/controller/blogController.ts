@@ -1,7 +1,5 @@
-
-import { prisma } from '../lib/prisma';
+import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
-
 
 export async function listBlogs(req: Request, res: Response) {
   const page = Number(req.query.page ?? 1);
@@ -12,9 +10,9 @@ export async function listBlogs(req: Request, res: Response) {
     prisma.blogPost.findMany({
       skip,
       take: pageSize,
-      orderBy: { publishedAt: "desc" }
+      orderBy: { publishedAt: "desc" },
     }),
-    prisma.blogPost.count()
+    prisma.blogPost.count(),
   ]);
 
   res.json({ items, total, page, pageSize });
@@ -22,7 +20,7 @@ export async function listBlogs(req: Request, res: Response) {
 export async function listBlogsByUserid(req: Request, res: Response) {
   const userId = Number(req.params.userId);
   const blogs = await prisma.blogPost.findMany({
-    where: {  userId },
+    where: { userId },
     include: { user: true },
   });
   res.json(blogs);
@@ -35,19 +33,65 @@ export async function getBlog(req: Request, res: Response) {
 }
 
 export async function createBlog(req: Request, res: Response) {
-  const { title, description, userId } = req.body;
-  const created = await prisma.blogPost.create({
-    data: { title, description, userId }
-  });
-  res.status(201).json(created);
+  try {
+    const { title, description } = req.body;
+
+    // Basic validation
+    if (!title || !description) {
+      return res
+        .status(400)
+        .json({ error: "title and description are required" });
+    }
+    
+    console.log("Raw req.headers['content-type']:", req.headers['content-type']);
+    console.log("Raw req.body (typeof):", typeof req.body, req.body);
+    console.log("req.body.userId:", req.body?.userId);
+
+    const userId = Number(req.body.userId);
+
+    if(isNaN(userId)) {
+      return res.status(400).json({ error: "userId must be a number" });
+    }
+    if (!Number.isInteger(userId) || userId <= 0) {
+      return res
+        .status(400)
+        .json({ error: "userId must be a positive integer" });
+    }
+
+    const created = await prisma.blogPost.create({
+      data: {
+        title,
+        description,
+        userId, // <-- ensure it's a number, not undefined
+      },
+    });
+
+    res.status(201).json(created);
+  } catch (err: any) {
+    // Optional: handle Prisma FK violation (P2003) when user doesn't exist
+    if (err.code === "P2003") {
+      return res
+        .status(400)
+        .json({ error: "userId does not reference an existing user" });
+    }
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
+// export async function createBlog(req: Request, res: Response) {
+//   const { title, description, userId } = req.body;
+//   const created = await prisma.blogPost.create({
+//     data: { title, description, userId }
+//   });
+//   res.status(201).json(created);
+// }
 
 export async function updateBlog(req: Request, res: Response) {
   const id = Number(req.params.id);
   const { title, description } = req.body;
   const updated = await prisma.blogPost.update({
     where: { id },
-    data: { title, description }
+    data: { title, description },
   });
   res.json(updated);
 }
@@ -62,7 +106,7 @@ export async function incrementView(req: Request, res: Response) {
   const id = Number(req.params.id);
   const updated = await prisma.blogPost.update({
     where: { id },
-    data: { viewCount: { increment: 1 } }
+    data: { viewCount: { increment: 1 } },
   });
   res.json(updated);
 }

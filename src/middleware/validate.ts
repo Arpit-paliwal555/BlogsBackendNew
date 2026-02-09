@@ -4,7 +4,8 @@ import { Request, Response, NextFunction } from "express";
 
 export const blogCreateSchema = z.object({
   title: z.string().min(1),
-  description: z.string().min(1)
+  description: z.string().min(1),
+  userId: z.number().int().positive()
 });
 
 export const blogUpdateSchema = z.object({

@@ -19,7 +19,7 @@ app.use(express.json());
 // urlencoded for form posts if needed
 app.use(express.urlencoded({ extended: true }));
 
-// security + logging
+// security (helmet) + logging(morgan) + CORS
 app.use(cors({ origin: true, credentials: true }));
 app.use(helmet());
 app.use(morgan("dev"));
