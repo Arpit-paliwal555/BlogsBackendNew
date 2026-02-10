@@ -14,10 +14,12 @@ export const blogUpdateSchema = z.object({
 });
 
 export const imageCreateSchema = z.object({
-  caption: z.string().min(1)
+  caption: z.string().min(1),
+  userId: z.coerce.number().int().positive()
 });
 
 export const commentCreateSchema = z.object({
+  userId: z.number().int().positive(),
   text: z.string().min(1)
 });
 

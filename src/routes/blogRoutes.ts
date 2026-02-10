@@ -12,6 +12,6 @@ router.patch("/:id", validate(blogUpdateSchema), updateBlog);
 router.delete("/:id", deleteBlog);
 
 // increment views
-router.post("/:id/views", incrementView);
+router.patch("/:id/views", incrementView);
 
 export default router;

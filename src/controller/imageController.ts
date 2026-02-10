@@ -70,7 +70,7 @@ export async function createImage(req: Request, res: Response) {
 export async function deleteImage(req: Request, res: Response) {
   const id = Number(req.params.id);
   await prisma.imagePost.delete({ where: { id } });
-  res.status(204).send();
+  res.status(204).json({ message: "Image deleted" });
 }
 
 export async function addComment(req: Request, res: Response) {

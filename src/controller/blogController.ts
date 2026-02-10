@@ -42,10 +42,6 @@ export async function createBlog(req: Request, res: Response) {
         .status(400)
         .json({ error: "title and description are required" });
     }
-    
-    console.log("Raw req.headers['content-type']:", req.headers['content-type']);
-    console.log("Raw req.body (typeof):", typeof req.body, req.body);
-    console.log("req.body.userId:", req.body?.userId);
 
     const userId = Number(req.body.userId);
 
@@ -78,13 +74,6 @@ export async function createBlog(req: Request, res: Response) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-// export async function createBlog(req: Request, res: Response) {
-//   const { title, description, userId } = req.body;
-//   const created = await prisma.blogPost.create({
-//     data: { title, description, userId }
-//   });
-//   res.status(201).json(created);
-// }
 
 export async function updateBlog(req: Request, res: Response) {
   const id = Number(req.params.id);
@@ -99,7 +88,7 @@ export async function updateBlog(req: Request, res: Response) {
 export async function deleteBlog(req: Request, res: Response) {
   const id = Number(req.params.id);
   await prisma.blogPost.delete({ where: { id } });
-  res.status(204).send();
+  res.status(204).send().json({ message: "Blog deleted" });
 }
 
 export async function incrementView(req: Request, res: Response) {
