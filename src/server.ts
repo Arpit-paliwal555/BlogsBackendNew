@@ -14,13 +14,13 @@ dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 
+app.use(cors({ origin: true, credentials: true }));
 // JSON body parsing
 app.use(express.json());
 // urlencoded for form posts if needed
 app.use(express.urlencoded({ extended: true }));
 
 // security (helmet) + logging(morgan) + CORS
-app.use(cors({ origin: true, credentials: true }));
 app.use(helmet());
 app.use(morgan("dev"));
 

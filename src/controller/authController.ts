@@ -11,7 +11,7 @@ export async function login(req: Request, res: Response) {
     email?: string;
     password?: string;
   };
-
+  console.log("REQ BODY:", req.body);
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
   }
@@ -70,6 +70,12 @@ export async function signup(req: Request, res: Response) {
         imagePosts: true,
       },
     });
+    const token = jwt.sign({ userId: created.id }, SECRET, { expiresIn: "1h" });
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+  });
     return res.status(200).json(created);
   } catch (err) {
     //Handle unique constraint errors (P2002)
