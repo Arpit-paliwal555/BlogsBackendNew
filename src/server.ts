@@ -6,6 +6,7 @@ import morgan from "morgan";
 import path from "path";
 import dotenv from "dotenv";
 import routes from "./routes";
+import cookieparser from "cookie-parser";
 import { errorHandler } from "./middleware/errorHandler";
 import { notFound } from "./middleware/notFound";
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // security (helmet) + logging(morgan) + CORS
 app.use(helmet());
 app.use(morgan("dev"));
+app.use(cookieparser());
 
 // serve uploaded images statically
 const staticDir = path.join(process.cwd(), "uploads");

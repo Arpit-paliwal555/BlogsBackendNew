@@ -17,7 +17,7 @@ export async function login(req: Request, res: Response) {
   }
   // add zod validation here
   const user = await prisma.user.findFirst({
-    where: { email, password },
+    where: { email },
     include: {
       blogPosts: true,
       imagePosts: true,
@@ -25,7 +25,7 @@ export async function login(req: Request, res: Response) {
   });
 
   if (!user) return res.status(404).json({ message: "User not found" });
-  const isMatch = bcrypt.compare(password, user.password);
+  const isMatch =  await bcrypt.compare(password, user.password);
 
   if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
