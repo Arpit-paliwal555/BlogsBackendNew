@@ -90,3 +90,17 @@ export async function signup(req: Request, res: Response) {
     }
   }
 }
+
+export async function getUser(req: Request, res: Response) {
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    include: {
+      blogPosts: true,
+      imagePosts: true,
+    },
+  });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  res.json(user);
+}
