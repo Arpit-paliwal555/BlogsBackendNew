@@ -7,11 +7,28 @@ export async function listBlogs(req: Request, res: Response) {
   const skip = (page - 1) * pageSize;
 
   const [items, total] = await Promise.all([
-    prisma.blogPost.findMany({
-      skip,
-      take: pageSize,
-      orderBy: { publishedAt: "desc" },
-    }),
+    prisma.blogPost.findMany(
+{
+        skip,
+        take: pageSize,
+        orderBy: { publishedAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          viewCount: true,
+          publishedAt: true,
+          userId: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              // avatarUrl: true, // if you have it
+            },
+          },
+        },
+      }
+),
     prisma.blogPost.count(),
   ]);
 
