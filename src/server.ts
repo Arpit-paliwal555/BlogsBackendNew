@@ -21,6 +21,8 @@ app.use(express.json());
 // urlencoded for form posts if needed
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/uploads", express.static("uploads"));
+
 // security (helmet) + logging(morgan) + CORS
 app.use(helmet());
 app.use(morgan("dev"));

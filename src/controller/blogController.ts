@@ -7,8 +7,7 @@ export async function listBlogs(req: Request, res: Response) {
   const skip = (page - 1) * pageSize;
 
   const [items, total] = await Promise.all([
-    prisma.blogPost.findMany(
-{
+    prisma.blogPost.findMany({
         skip,
         take: pageSize,
         orderBy: { publishedAt: "desc" },
@@ -19,11 +18,12 @@ export async function listBlogs(req: Request, res: Response) {
           viewCount: true,
           publishedAt: true,
           userId: true,
+          imageUrl: true,
           user: {
             select: {
               id: true,
               username: true,
-              // avatarUrl: true, // if you have it
+              // avatarUrl: true,
             },
           },
         },
@@ -52,13 +52,19 @@ export async function getBlog(req: Request, res: Response) {
 export async function createBlog(req: Request, res: Response) {
   try {
     const { title, description } = req.body;
+    let imageUrl = null; // Optional image URL
 
+    if (req.file) {
+      imageUrl = `/uploads/images/${req.file.filename}`; // Store relative path
+    }
+    console.log(imageUrl);
     // Basic validation
     if (!title || !description) {
       return res
         .status(400)
         .json({ error: "title and description are required" });
     }
+    
 
     const userId = Number(req.body.userId);
 
@@ -76,6 +82,7 @@ export async function createBlog(req: Request, res: Response) {
         title,
         description,
         userId, // <-- ensure it's a number, not undefined
+        imageUrl, // optional, will be null if no file uploaded
       },
     });
 

@@ -39,7 +39,7 @@ model BlogPost {
   description  String
   viewCount    Int      @default(0)
   publishedAt  DateTime @default(now())
-
+  imageUrl     String?
   // User Relation
   userId       Int
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
