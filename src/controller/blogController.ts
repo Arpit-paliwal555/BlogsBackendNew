@@ -36,9 +36,28 @@ export async function listBlogs(req: Request, res: Response) {
 }
 export async function listBlogsByUserid(req: Request, res: Response) {
   const userId = Number(req.params.userId);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return res.status(400).json({ error: "userId must be a positive integer" });
+  }
+
   const blogs = await prisma.blogPost.findMany({
     where: { userId },
-    include: { user: true },
+    orderBy: { publishedAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      viewCount: true,
+      publishedAt: true,
+      userId: true,
+      imageUrl: true,
+      user: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+    },
   });
   res.json(blogs);
 }
