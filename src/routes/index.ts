@@ -9,7 +9,7 @@ const router = Router();
 
 router.get("/health", (_req, res) => res.json({ ok: true }));
 
-router.use("/blogs", authMiddleware, blogRoutes);
+router.use("/blogs", blogRoutes);
 router.use("/images", authMiddleware, imageRoutes);
 router.use("/users", userRoutes);
 
